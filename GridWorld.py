@@ -9,7 +9,7 @@ import numpy as np
 
 WALL=[5]
 Q = np.zeros((3,4))
-R_DEF =-.03
+R_DEF =-.04
 R = [R_DEF for _ in range(12)]
 R[3]=1
 R[7]=-1
@@ -72,9 +72,12 @@ def value_iteration():
             print("!!! Covergence at:{}".format(i))
             break
     print("V =>{}".format(V))
-    PI_S = np.array([_action_depict(a) for a in PI]).reshape((3,4))
+#    _evaluate_policy()
+    global PI_S
+    PI_S = np.vectorize(_action_depict)(PI).reshape((3,4))
         
 def _value_calculation():
+    global PI
     for s in range(12):
         if s in NO_CALC_STATES:
             continue
@@ -94,8 +97,7 @@ def _value_calculation():
             E_V[a] =E_V[a]+ .1 *  V[s_p_r]
         V[s] = R[s] + gamma * max(E_V)
         PI[s] = np.argmax(E_V)
-    global PI_S
-    PI_S = np.vectorize(_action_depict)(PI).reshape((3,4))
+    
         
 def _action_depict(a):
     if a==2:
@@ -114,6 +116,7 @@ value_iteration()
 print("PI==>\n{}".format(PI_S))
 
 def _evaluate_policy():
+    global PI
     for s in range(12):
         if s in NO_CALC_STATES:
             continue
@@ -131,7 +134,7 @@ def _evaluate_policy():
             a_right = get_right(s,a)
             s_p_r = get_next(s,a_right)
             E_V[a] =E_V[a]+ .1 *  V[s_p_r]
-        V[s] = R[s] + gamma * max(E_V)
+        PI[s] = np.argmax(E_V)
 
 
 
